@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
+import MainPageFooter from './components/MainPageFooter.vue'
 </script>
 
 <template>
@@ -15,6 +16,7 @@ import TheWelcome from './components/TheWelcome.vue'
   <main>
     <TheWelcome />
   </main>
+  <MainPageFooter />
 </template>
 
 <style scoped>
