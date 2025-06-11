@@ -2,21 +2,24 @@
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import MainPageFooter from './components/MainPageFooter.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <RouterView>
+    <header>
+      <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
 
-    <div class="wrapper">
-      <HelloWorld msg="星海泛舟 个人主页" />
-    </div>
-  </header>
+      <div class="wrapper">
+        <HelloWorld msg="星海泛舟 个人主页" />
+      </div>
+    </header>
 
-  <main>
-    <TheWelcome />
-  </main>
-  <MainPageFooter />
+    <main>
+      <TheWelcome />
+    </main>
+    <MainPageFooter />
+  </RouterView>
 </template>
 
 <style scoped>
