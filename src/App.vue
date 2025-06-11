@@ -2,7 +2,7 @@
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import MainPageFooter from './components/MainPageFooter.vue'
-import { RouterView } from 'vue-router'
+// import { RouterView } from 'vue-router'
 </script>
 
 <template>
