@@ -44,9 +44,6 @@ jobs:
       - name: Setup pnpm
         # 使用 GitHub 官方的 pnpm 环境设置操作，安装指定版本的 pnpm
         uses: pnpm/action-setup@v4
-        with:
-          # 指定 pnpm 版本为 8
-          version: 'latest'
       - name: Setup Node
         # 使用 GitHub 官方的 Node.js 环境设置操作，安装指定版本的 Node.js
         uses: actions/setup-node@v4
