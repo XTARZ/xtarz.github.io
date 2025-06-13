@@ -47,10 +47,20 @@ jobs:
         with:
           # 指定 Node.js 版本为 22
           node-version: '22'
-          cache: 'pnpm'
       - name: Corepack enable
         # 启用 Corepack，Corepack 是 Node.js 内置的包管理器管理工具
         run: corepack enable
+      - name: Setup pnpm cache
+        # 使用 GitHub 官方的缓存操作，设置 pnpm 的缓存
+        uses: actions/cache@v4
+        with:
+          # 指定缓存路径为 pnpm 的存储路径
+          path: ~/.pnpm-store
+          # 定义缓存的唯一键，基于操作系统和 pnpm-lock.yaml 文件的哈希值
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          # 恢复缓存的前缀键，便于快速恢复较旧的缓存
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
       - name: Install dependencies
         # 使用 pnpm 包管理器安装项目依赖
         run: pnpm i
