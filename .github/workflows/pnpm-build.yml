@@ -1,0 +1,91 @@
+# 示例工作流，用于构建 Nuxt 站点并部署到 GitHub Pages
+#
+# 若要开始使用 Nuxt，请访问：https://nuxtjs.org/docs/get-started/installation
+#
+# 定义工作流的名称，该名称会显示在 GitHub Actions 界面中
+name: Build with pnpm and deploy to GitHub Pages
+
+# 定义触发工作流的事件
+on:
+  # 当向默认分支（此处为 'main' 分支）推送代码时触发工作流
+  push:
+    branches: ['main']
+
+  # 允许你从 Actions 选项卡手动触发此工作流
+  workflow_dispatch:
+
+# 设置 GITHUB_TOKEN 的权限，以便部署到 GitHub Pages
+permissions:
+  # 允许读取仓库内容
+  contents: read
+  # 允许写入 GitHub Pages 相关资源
+  pages: write
+  # 允许写入 ID 令牌
+  id-token: write
+
+# 配置并发执行策略，确保同一时间只有一个部署任务在运行
+concurrency:
+  # 定义并发组名称
+  group: 'pages'
+  # 不取消正在进行的运行任务，确保生产部署能够完成
+  cancel-in-progress: false
+
+# 定义工作流中的任务
+jobs:
+  # 构建任务，负责构建 Nuxt 项目
+  build:
+    # 指定运行任务的环境，这里使用最新版的 Ubuntu
+    runs-on: ubuntu-latest
+    # 定义构建任务的具体步骤
+    steps:
+      - name: Checkout
+        # 使用 GitHub 官方的检出代码操作，将仓库代码拉取到运行环境中
+        uses: actions/checkout@v4
+      - name: Setup Node
+        # 使用 GitHub 官方的 Node.js 环境设置操作，安装指定版本的 Node.js
+        uses: actions/setup-node@v4
+        with:
+          # 指定 Node.js 版本为 22
+          node-version: '22'
+      - name: Corepack enable
+        # 启用 Corepack，Corepack 是 Node.js 内置的包管理器管理工具
+        run: corepack enable
+      - name: Cache pnpm modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+      - name: Install dependencies
+        # 使用 pnpm 包管理器安装项目依赖
+        run: pnpm i
+      - name: Static HTML export with Nuxt
+        # 使用 pnpm 执行构建命令，生成静态 HTML 文件
+        run: pnpm build
+      - name: Upload artifact
+        # 使用 GitHub 官方的上传工件操作，将构建生成的 dist 目录作为工件上传
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # 指定上传的文件路径为 dist 目录
+          path: ./dist
+
+  # 部署任务，负责将构建好的项目部署到 GitHub Pages
+  deploy:
+    # 定义部署的环境信息
+    environment:
+      # 环境名称为 github-pages
+      name: github-pages
+      # 部署后的页面 URL，从部署步骤的输出中获取
+      url: ${{ steps.deployment.outputs.page_url }}
+    # 指定运行任务的环境，这里使用最新版的 Ubuntu
+    runs-on: ubuntu-latest
+    # 表示该任务依赖于 build 任务，只有 build 任务成功完成后才会执行
+    needs: build
+    # 定义部署任务的具体步骤
+    steps:
+      - name: Deploy to GitHub Pages
+        # 为该步骤设置 ID，方便后续引用输出
+        id: deployment
+        # 使用 GitHub 官方的部署到 Pages 操作，将之前上传的工件部署到 GitHub Pages
+        uses: actions/deploy-pages@v4
